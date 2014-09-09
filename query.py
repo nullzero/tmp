@@ -77,7 +77,6 @@ with open('query-result.txt', 'w') as f:
         try:
             revisions = user.revisions
             for revision in revisions:
-                print revision
                 if revision.rev_timestamp >= ts30days and revision.page.page_namespace == 0 and revision.rev_deleted == 0:
                     if revision.parent is None:
                         if revision.rev_len >= LENGTH_DIFF:
@@ -94,3 +93,4 @@ with open('query-result.txt', 'w') as f:
 
     for row in sorted(dic.iteritems(), key=operator.itemgetter(1), reverse=True):
         f.write('| [[User:{}]] || {}\n'.format(row[0], row[1]))
+        print row
