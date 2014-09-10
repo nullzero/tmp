@@ -59,38 +59,51 @@ def tots(s):
 
 import collections
 
-LENGTH_DIFF = 500
-
 ts90days = tots(datetime.datetime.now() - datetime.timedelta(days=1))
 ts30days = tots(datetime.datetime.now() - datetime.timedelta(days=1))
 
-dic = {}
-users = User.query.options(subqueryload(User.revisions)).filter(User.user_registration >= ts90days).all()
-print 'start the loop'
-
 import operator
 
-with open('query-result.txt', 'w') as f:
-    for user in users:
-        cnt = 0
-        print user
-        try:
-            revisions = user.revisions
-            for revision in revisions:
-                if revision.rev_timestamp >= ts30days and revision.page.page_namespace == 0 and revision.rev_deleted == 0:
-                    if revision.parent is None:
-                        if revision.rev_len >= LENGTH_DIFF:
-                            cnt += 1
-                    else:
-                        if revision.parent.rev_len - revision.rev_len >= LENGTH_DIFF:
-                            cnt += 1
-            if cnt:
-                dic[user.user_name] = cnt
-        except Exception as e:
-            f.write('found problem with {}'.format(user.user_name))
-            print e
-            print 'found problem with {}'.format(user.user_name)
+def find_edit():
+    dic = {}
+    users = User.query.options(subqueryload(User.revisions)).filter(User.user_registration >= ts90days).all()
+    print 'start the loop'
+    LENGTH_DIFF = 500
+    with open('task1.txt', 'w') as f:
+        for user in users:
+            cnt = 0
+            print user
+            try:
+                revisions = user.revisions
+                for revision in revisions:
+                    if revision.rev_timestamp >= ts30days and revision.page.page_namespace == 0 and revision.rev_deleted == 0:
+                        if revision.parent is None:
+                            if revision.rev_len >= LENGTH_DIFF:
+                                cnt += 1
+                        else:
+                            if revision.parent.rev_len - revision.rev_len >= LENGTH_DIFF:
+                                cnt += 1
+                if cnt:
+                    dic[user.user_name] = cnt
+            except Exception as e:
+                f.write('found problem with {}'.format(user.user_name))
+                print e
+                print 'found problem with {}'.format(user.user_name)
 
-    for row in sorted(dic.iteritems(), key=operator.itemgetter(1), reverse=True):
-        f.write('| [[User:{}]] || {}\n'.format(row[0], row[1]))
-        print row
+        for row in sorted(dic.iteritems(), key=operator.itemgetter(1), reverse=True):
+            f.write('| [[User:{}]] || {}\n'.format(row[0], row[1]))
+            print row
+
+def find_create():
+    cnt = collections.Counter()
+    revisions = Revision.query.options(subqueryload(Revision.page)).filter(Revision.rev_parent_id == 0 and rev_deleted == 0)
+    for revision in revisions:
+        if revision.page.page_namespace == 0:
+            cnt[revision.rev_user_text] += 1
+    
+    with open('task2.txt', 'w') as f:
+        for i, j in cnt.most_common(100):
+            f.write('|-\n| [[User:{}]] || {}'.format(i, j))
+            print '|-\n| [[User:{}]] || {}'.format(i, j)
+
+find_create()
