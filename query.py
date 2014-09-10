@@ -97,12 +97,14 @@ def find_edit():
 def find_create():
     cnt = collections.Counter()
     print 'before q'
-    revisions = Revision.query.filter_by(rev_parent_id=0, rev_deleted=0).all()
-    print 'after q'
-    for revision in revisions:
-        print revision
-        if revision.page and revision.page.page_namespace == 0:
-            cnt[revision.rev_user_text] += 1
+    for i in xrange(0, 5600000, 10000):
+        print i
+        revisions = Revision.query.filter(between(Revision.rev_id, i, i+10000), Revision.rev_parent_id == 0, Revision.rev_deleted == 0)
+        print 'after q'
+        for revision in revisions:
+            print revision
+            if revision.page and revision.page.page_namespace == 0:
+                cnt[revision.rev_user_text] += 1
     
     print 'begin writing'
     with open('task2.txt', 'w') as f:
