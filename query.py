@@ -96,8 +96,11 @@ def find_edit():
 
 def find_create():
     cnt = collections.Counter()
+    print 'before q'
     revisions = Revision.query.options(subqueryload(Revision.page)).filter(Revision.rev_parent_id == 0 and rev_deleted == 0)
+    print 'after q'
     for revision in revisions:
+        print revision
         if revision.page.page_namespace == 0:
             cnt[revision.rev_user_text] += 1
     
