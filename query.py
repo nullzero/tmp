@@ -3,7 +3,7 @@ from sqlalchemy.orm import scoped_session, sessionmaker, relationship, backref, 
 from sqlalchemy.ext.declarative import declarative_base
 
 URI = 'mysql://thwiki.labsdb/thwiki_p?read_default_file=~/replica.my.cnf'
-# URI = 'mysql://root:password@localhost/wikidb'
+URI = 'mysql://root:password@localhost/wikidb'
 
 engine = create_engine(URI, convert_unicode=True)
 session = scoped_session(sessionmaker(autocommit=False,
@@ -97,13 +97,14 @@ def find_edit():
 def find_create():
     cnt = collections.Counter()
     print 'before q'
-    revisions = Revision.query.options(subqueryload(Revision.page)).filter(Revision.rev_parent_id == 0 and rev_deleted == 0)
+    revisions = Revision.query.filter(Revision.rev_parent_id == 0 and Revision.rev_deleted == 0)
     print 'after q'
     for revision in revisions:
         print revision
         if revision.page and revision.page.page_namespace == 0:
             cnt[revision.rev_user_text] += 1
     
+    print 'begin writing'
     with open('task2.txt', 'w') as f:
         for i, j in cnt.most_common(100):
             f.write('|-\n| [[User:{}]] || {}'.format(i, j))
