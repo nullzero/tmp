@@ -101,7 +101,7 @@ def find_create():
     print 'after q'
     for revision in revisions:
         print revision
-        if revision.page.page_namespace == 0:
+        if revision.page and revision.page.page_namespace == 0:
             cnt[revision.rev_user_text] += 1
     
     with open('task2.txt', 'w') as f:
