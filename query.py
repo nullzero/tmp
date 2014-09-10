@@ -97,7 +97,7 @@ def find_edit():
 def find_create():
     cnt = collections.Counter()
     print 'before q'
-    revisions = Revision.query.filter(and_(Revision.rev_parent_id == 0, Revision.rev_deleted == 0))
+    revisions = Revision.query.filter_by(rev_parent_id=0, rev_deleted=0).all()
     print 'after q'
     for revision in revisions:
         print revision
