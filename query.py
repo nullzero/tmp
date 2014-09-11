@@ -3,7 +3,7 @@ from sqlalchemy.orm import scoped_session, sessionmaker, relationship, backref, 
 from sqlalchemy.ext.declarative import declarative_base
 
 URI = 'mysql://thwiki.labsdb/thwiki_p?read_default_file=~/replica.my.cnf'
-URI = 'mysql://root:password@localhost/wikidb'
+# URI = 'mysql://root:password@localhost/wikidb'
 
 engine = create_engine(URI, convert_unicode=True)
 session = scoped_session(sessionmaker(autocommit=False,
@@ -62,6 +62,7 @@ import collections
 current = datetime.datetime(day=1, month=9, year=2014)
 before1month = tots(current - datetime.timedelta(days=30))
 before3month = tots(current - datetime.timedelta(days=90))
+current = tots(current)
 import operator
 
 def find_edit():
@@ -78,7 +79,7 @@ def find_edit():
             try:
                 revisions = user.revisions
                 for revision in revisions:
-                    if ((before1month <= revision.rev_timestamp <= current) and
+                    if (revision.page and (before1month <= revision.rev_timestamp <= current) and
                             revision.page.page_namespace == 0 and
                             revision.rev_deleted == 0):
                         if revision.parent is None:
@@ -90,9 +91,9 @@ def find_edit():
                 if cnt:
                     dic[user.user_name] = cnt
             except Exception as e:
-                f.write('found problem with {}'.format(user.user_name))
+                f.write('found problem with {}\n'.format(user.user_name))
                 print e
-                print 'found problem with {}'.format(user.user_name)
+                print 'found problem with {}\n'.format(user.user_name)
 
         for row in sorted(dic.iteritems(), key=operator.itemgetter(1), reverse=True):
             f.write('| [[User:{}]] || {}\n'.format(row[0], row[1]))
