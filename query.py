@@ -69,7 +69,7 @@ def find_edit():
     dic = {}
     users = User.query.options(
         subqueryload(User.revisions)
-    ).filter(between(User.user_registration, before3month, current)).all()
+    ).filter(between(User.user_registration, before3month, current))
     print 'start the loop'
     LENGTH_DIFF = 500
     with open('task1.txt', 'w') as f:
@@ -126,7 +126,7 @@ def find_create():
                                       Revision.rev_deleted == 0)
     for revision in revisions:
         print revision
-        if revision.page and revision.page.page_namespace == 0:
+        if revision.page and revision.page.page_namespace == 0 and revision.page.page_is_redirect == 0:
             cnt[revision.rev_user_text] += 1
     
     print 'begin writing'
