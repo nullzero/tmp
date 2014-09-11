@@ -96,7 +96,7 @@ def find_edit():
                 print 'found problem with {}\n'.format(user.user_name)
 
         for row in sorted(dic.iteritems(), key=operator.itemgetter(1), reverse=True):
-            f.write('| [[User:{}]] || {}\n'.format(row[0], row[1]))
+            f.write('|-\n| [[User:{}]] || {}\n'.format(row[0], row[1]))
             print row
 
 """
